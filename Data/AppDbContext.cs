@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QuizApp.Mappings;
+using QuizApp.Models.User;
 
 namespace QuizApp.Data
 {
@@ -7,5 +9,11 @@ namespace QuizApp.Data
         public AppDbContext( DbContextOptions<AppDbContext> options) : base(options)
         {
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UserMap());
+        }
+
+        public DbSet<UserModel> Users { get; set; }
     }
 }
