@@ -2,16 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.Data;
 using QuizApp.DTOs;
+using QuizApp.Services;
 
 namespace QuizApp.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    public UserController(AppDbContext context)
+    private readonly IUserService _userService;
+    public UserController(IUserService userService)
     {
-        _context = context;
+        _userService = userService;
     }
     [HttpPost("register")]
     public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDTO userRegistrationDto)
@@ -23,28 +24,15 @@ public class UserController : ControllerBase
 
         try
         {
-            var emailExists = await _context.Users.AnyAsync(u => u.Email == userRegistrationDto.Email);
-
-            if (emailExists)
+            var result = await _userService.RegisterUser(userRegistrationDto);
+            if (result)
             {
-                return BadRequest("Email already exists");
+                return Ok("User registered successfully.");
             }
-
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegistrationDto.Password);
-
-            // TODO: Create new User object (when the model is ready)
-            var newUser = new User
+            else
             {
-                Name = userRegistrationDto.Name,
-                Email = userRegistrationDto.Email,
-                Password = hashedPassword
-                 DateCreated = DateTime.UtcNow
-            };
-
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-            return Ok("User registered successfully");
-
+                return BadRequest("User registration failed.");
+            }
         }
         catch (Exception ex)
         {
