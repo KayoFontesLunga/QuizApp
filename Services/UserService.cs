@@ -1,5 +1,8 @@
-﻿using QuizApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using QuizApp.Data;
 using QuizApp.DTOs;
+using QuizApp.Migrations;
+using QuizApp.Models.User;
 
 namespace QuizApp.Services;
 
@@ -19,11 +22,11 @@ public class UserService : IUserService
             return false;
         }
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegistrationDto.Password);
-        var user = new User
+        var user = new UserModel()
         {
             Name = userRegistrationDto.Name,
             Email = userRegistrationDto.Email,
-            Password = hashedPassword
+            HashPassword = hashedPassword
         };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
