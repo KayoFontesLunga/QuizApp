@@ -39,4 +39,27 @@ public class UserController : ControllerBase
             return StatusCode(500, $"Error registering user: {ex.Message}");
         }
     }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] UserLoginDTO userLoginDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var token = await _userService.LoginAsync(userLoginDto);
+            if (token == null)
+            {
+                return Unauthorized("credentials invalid.");
+            }
+            else
+            {
+                return Ok(new { token });
+            }
+        }catch (Exception ex)
+        {
+            return StatusCode(500, $"Error logging in: {ex.Message}");
+        }
+    }
 }
