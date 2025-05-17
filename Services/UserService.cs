@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using QuizApp.Data;
 using QuizApp.DTOs;
@@ -20,6 +20,29 @@ public class UserService : IUserService
     {
         _context = context;
         _jwtSettings = jwtSettings.Value;
+    }
+    public async Task<List<UserListDTO>> GetAllUsers()
+    {
+        try
+        {
+            // Recupera todos os usuários do banco
+            var users = await _context.Users.ToListAsync();
+
+            // Transforma os usuários para o formato do DTO e retorna
+            return users.Select(user => new UserListDTO()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            }).ToList();
+
+        }
+        catch (Exception ex)
+        {
+
+            return new List<UserListDTO>(); 
+        }
+
     }
     public async Task<bool> RegisterUser(UserRegistrationDTO userRegistrationDto)
     {
