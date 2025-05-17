@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.Data;
 using QuizApp.DTOs;
@@ -39,7 +39,6 @@ public class UserController : ControllerBase
             return StatusCode(500, $"Error registering user: {ex.Message}");
         }
     }
-
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -50,5 +49,27 @@ public class UserController : ControllerBase
 
         return Ok(users); 
     }
-
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] UserLoginDTO userLoginDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var token = await _userService.LoginAsync(userLoginDto);
+            if (token == null)
+            {
+                return Unauthorized("credentials invalid.");
+            }
+            else
+            {
+                return Ok(new { token });
+            }
+        }catch (Exception ex)
+        {
+            return StatusCode(500, $"Error logging in: {ex.Message}");
+        }
+    }
 }
