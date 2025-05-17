@@ -14,6 +14,30 @@ public class UserService : IUserService
         _context = context;
     }
 
+    public async Task<List<UserListDTO>> GetAllUsers()
+    {
+        try
+        {
+            // Recupera todos os usuários do banco
+            var users = await _context.Users.ToListAsync();
+
+            // Transforma os usuários para o formato do DTO e retorna
+            return users.Select(user => new UserListDTO()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            }).ToList();
+
+        }
+        catch (Exception ex)
+        {
+
+            return new List<UserListDTO>(); 
+        }
+
+    }
+
     public async Task<bool> RegisterUser(UserRegistrationDTO userRegistrationDto)
     {
         var userExists = await _context.Users.AnyAsync(u => u.Email == userRegistrationDto.Email);

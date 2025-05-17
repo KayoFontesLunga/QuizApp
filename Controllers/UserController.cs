@@ -39,4 +39,16 @@ public class UserController : ControllerBase
             return StatusCode(500, $"Error registering user: {ex.Message}");
         }
     }
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _userService.GetAllUsers();
+
+        if (users == null || !users.Any())
+            return NotFound("Nenhum usuário encontrado.");
+
+        return Ok(users); 
+    }
+
 }
