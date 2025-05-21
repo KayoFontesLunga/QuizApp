@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.Data;
 using QuizApp.DTOs;
 using QuizApp.Services;
+using System.Security.Claims;
 
 namespace QuizApp.Controllers;
 [Route("api/[controller]")]
@@ -71,5 +73,13 @@ public class UserController : ControllerBase
         {
             return StatusCode(500, $"Error logging in: {ex.Message}");
         }
+    }
+    [Authorize]
+    [HttpGet("WhoAmI")]
+    public IActionResult WhoAmI()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userName = User.Identity?.Name;
+        return Ok(new { userId, userName });
     }
 }

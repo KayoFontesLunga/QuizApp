@@ -10,6 +10,6 @@ namespace QuizApp.Models.User
         public string HashPassword { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }
         public SexType SexTypes { get; set; }
-
+        public string Role { get; set; } = "User";
     }
 }
