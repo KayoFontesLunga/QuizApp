@@ -39,7 +39,6 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
-
             return new List<UserListDTO>(); 
         }
 
@@ -56,25 +55,31 @@ public class UserService : IUserService
         {
             Name = userRegistrationDto.Name,
             Email = userRegistrationDto.Email,
-            HashPassword = hashedPassword
+            HashPassword = hashedPassword,
+            DateCreated = DateTime.UtcNow
         };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return true;
     }
-    public Task<string?> LoginAsync(UserLoginDTO userLoginDto)
+    public async Task<string?> LoginAsync(UserLoginDTO userLoginDto)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Email == userLoginDto.Email);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userLoginDto.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.HashPassword))
         {
-            return Task.FromResult<string?>(null);
+            return null;
         }
+
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email)
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        new Claim(JwtRegisteredClaimNames.UniqueName, user.Name),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.Name),
+        new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+        new Claim(ClaimTypes.Role, user.Role ?? "User")
         };
+
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
@@ -86,6 +91,6 @@ public class UserService : IUserService
             expires: expires,
             signingCredentials: creds
         );
-        return Task.FromResult<string?>(new JwtSecurityTokenHandler().WriteToken(token));
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
