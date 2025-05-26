@@ -6,4 +6,5 @@ namespace QuizApp.Services;
 public interface IQuizService
 {
     Task<QuizDTO> CreateQuizAsync(CreateQuizDTO createQuizDto, int userId);
+    Task<QuizDTO?> UpdateQuizAsync(UpdateQuizDTO updateQuizDto, int userId);
 }

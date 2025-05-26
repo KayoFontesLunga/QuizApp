@@ -30,4 +30,27 @@ public class QuizService : IQuizService
             CreatedAt = quiz.CreatedAt 
         };
     }
+    public async Task<QuizDTO?> UpdateQuizAsync(UpdateQuizDTO updateQuizDto, int userId)
+    {
+        var quiz = await _context.Quizzes.FindAsync(updateQuizDto.Id);
+
+        if (quiz == null || quiz.UserId != userId)
+        {
+            return null;
+        }
+
+        quiz.Title = updateQuizDto.Title;
+        quiz.Description = updateQuizDto.Description;
+
+        await _context.SaveChangesAsync();
+
+        return new QuizDTO
+        {
+            Id = quiz.Id,
+            Title = quiz.Title,
+            Description = quiz.Description,
+            CreatedAt = quiz.CreatedAt
+        };
+    }
+
 }
