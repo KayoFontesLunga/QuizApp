@@ -1,4 +1,5 @@
 ﻿using QuizApp.Models.Enum;
+using QuizApp.Models.Quiz;
 
 namespace QuizApp.Models.User
 {
@@ -11,5 +12,6 @@ namespace QuizApp.Models.User
         public DateTime DateCreated { get; set; }
         public SexType SexTypes { get; set; }
         public string Role { get; set; } = "User";
+        public ICollection<QuizModel> Quizzes { get; set; } = [];
     }
 }

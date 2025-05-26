@@ -56,6 +56,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
