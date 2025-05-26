@@ -72,13 +72,13 @@ public class QuizController : ControllerBase
 
             var result = await _quizService.DeleteQuizAsync(id, userId);
             if (!result)
-                return NotFound("Quiz not encontrado ou você não tem permissão.");
+                return NotFound("Quiz not found or you don't have permission.");
 
             return NoContent(); 
         }
         catch (Exception ex)
         {
-            return BadRequest($"Erro ao deletar quiz: {ex.Message}");
+            return BadRequest($"Error deleting quiz: {ex.Message}");
         }
     }
 }
