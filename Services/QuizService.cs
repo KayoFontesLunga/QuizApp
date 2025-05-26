@@ -52,5 +52,16 @@ public class QuizService : IQuizService
             CreatedAt = quiz.CreatedAt
         };
     }
+    public async Task<bool> DeleteQuizAsync(int quizId, int userId)
+    {
+        var quiz = await _context.Quizzes.FindAsync(quizId);
+
+        if (quiz == null || quiz.UserId != userId)
+            return false;
+
+        _context.Quizzes.Remove(quiz);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
 }

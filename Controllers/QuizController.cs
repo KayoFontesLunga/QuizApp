@@ -59,4 +59,26 @@ public class QuizController : ControllerBase
             return BadRequest($"Error updating quiz: {ex.Message}");
         }
     }
+    [HttpDelete("DeleteQuiz/{id}")]
+    public async Task<IActionResult> DeleteQuiz(int id)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+
+            var result = await _quizService.DeleteQuizAsync(id, userId);
+            if (!result)
+                return NotFound("Quiz not found or you don't have permission.");
+
+            return NoContent(); 
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error deleting quiz: {ex.Message}");
+        }
+    }
 }
