@@ -41,6 +41,7 @@ public class UserController : ControllerBase
             return StatusCode(500, $"Error registering user: {ex.Message}");
         }
     }
+    [Authorize(Roles = "Admin")]
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -81,5 +82,10 @@ public class UserController : ControllerBase
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var userName = User.Identity?.Name;
         return Ok(new { userId, userName });
+    }
+    [HttpGet("ping")]
+    public IActionResult Ping()
+    {
+        return Ok("pong");
     }
 }
