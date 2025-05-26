@@ -34,4 +34,29 @@ public class QuizController : ControllerBase
             return BadRequest($"Error creating quiz: {ex.Message}");
         }
     }
+    [HttpPut("UpdateQuiz")]
+    public async Task<IActionResult> UpdateQuiz([FromBody] UpdateQuizDTO updateQuizDTO)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+
+            var result = await _quizService.UpdateQuizAsync(updateQuizDTO, userId);
+
+            if (result == null)
+            {
+                return NotFound("Quiz not found or you are not the owner.");
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error updating quiz: {ex.Message}");
+        }
+    }
 }
