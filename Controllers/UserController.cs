@@ -45,12 +45,19 @@ public class UserController : ControllerBase
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers()
     {
-        var users = await _userService.GetAllUsers();
+        try
+        {
+            var users = await _userService.GetAllUsers();
 
-        if (users == null || !users.Any())
-            return NotFound("Nenhum usuário encontrado.");
+            if (users == null || !users.Any())
+                return NotFound("Nenhum usuário encontrado.");
 
-        return Ok(users); 
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error getting users: {ex.Message}");
+        }
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDTO userLoginDto)

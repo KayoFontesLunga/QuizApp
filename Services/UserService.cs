@@ -23,25 +23,14 @@ public class UserService : IUserService
     }
     public async Task<List<UserListDTO>> GetAllUsers()
     {
-        try
+        var users = await _context.Users.ToListAsync();
+
+        return users.Select(user => new UserListDTO()
         {
-            // Recupera todos os usuários do banco
-            var users = await _context.Users.ToListAsync();
-
-            // Transforma os usuários para o formato do DTO e retorna
-            return users.Select(user => new UserListDTO()
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email
-            }).ToList();
-
-        }
-        catch (Exception ex)
-        {
-            return new List<UserListDTO>(); 
-        }
-
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email
+        }).ToList();
     }
     public async Task<bool> RegisterUser(UserRegistrationDTO userRegistrationDto)
     {
@@ -56,6 +45,7 @@ public class UserService : IUserService
             Name = userRegistrationDto.Name,
             Email = userRegistrationDto.Email,
             HashPassword = hashedPassword,
+            Role = "User",
             DateCreated = DateTime.UtcNow
         };
         _context.Users.Add(user);
