@@ -81,4 +81,47 @@ public class QuizController : ControllerBase
             return BadRequest($"Error deleting quiz: {ex.Message}");
         }
     }
+
+    [HttpGet("Quizzes")]
+    public async Task<IActionResult> GetMyQuizzes()
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+
+            var quizzes = await _quizService.GetAllQuizzesByUserAsync(userId);
+            return Ok(quizzes);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Erro ao buscar quizzes: {ex.Message}");
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetQuizById(int id)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+
+            var quiz = await _quizService.GetQuizByIdAsync(id, userId);
+            if (quiz == null)
+                return NotFound("Quiz não encontrado ou você não tem permissão.");
+
+            return Ok(quiz);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Erro ao buscar quiz: {ex.Message}");
+        }
+    }
 }
