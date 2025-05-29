@@ -1,4 +1,5 @@
-﻿using QuizApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using QuizApp.Data;
 using QuizApp.DTOs;
 using QuizApp.Models.Quiz;
 
@@ -62,6 +63,36 @@ public class QuizService : IQuizService
         _context.Quizzes.Remove(quiz);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<List<QuizDTO>> GetAllQuizzesByUserAsync(int userId)
+    {
+        return await _context.Quizzes
+            .Where(q => q.UserId == userId)
+            .Select(q => new QuizDTO
+            {
+                Id = q.Id,
+                Title = q.Title,
+                Description = q.Description,
+                CreatedAt = q.CreatedAt
+            })
+            .ToListAsync();
+    }
+
+    public async Task<QuizDTO?> GetQuizByIdAsync(int quizId, int userId)
+    {
+        var quiz = await _context.Quizzes
+            .Where(q => q.Id == quizId && q.UserId == userId)
+            .Select(q => new QuizDTO
+            {
+                Id = q.Id,
+                Title = q.Title,
+                Description = q.Description,
+                CreatedAt = q.CreatedAt
+            })
+            .FirstOrDefaultAsync();
+
+        return quiz;
     }
 
 }
