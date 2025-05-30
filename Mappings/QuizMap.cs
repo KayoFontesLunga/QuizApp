@@ -33,5 +33,10 @@ public class QuizMap : IEntityTypeConfiguration<QuizModel>
             .WithMany(u => u.Quizzes)
             .HasForeignKey(q => q.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(q => q.Questions)
+            .WithOne(q => q.Quiz)
+            .HasForeignKey(q => q.QuizId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
