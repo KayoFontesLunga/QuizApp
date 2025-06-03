@@ -1,4 +1,5 @@
 ﻿using QuizApp.DTOs;
+using QuizApp.DTOs.Quiz;
 using QuizApp.Models.Quiz;
 
 namespace QuizApp.Services;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace QuizApp.DTOs;
+namespace QuizApp.DTOs.User;
 
 public class UserRegistrationDTO
 {

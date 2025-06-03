@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.DTOs;
+using QuizApp.DTOs.Quiz;
 using QuizApp.Services;
 using System.Security.Claims;
 
