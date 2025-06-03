@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.Data;
 using QuizApp.DTOs;
+using QuizApp.DTOs.User;
 using QuizApp.Services;
 using System.Security.Claims;
 
@@ -42,7 +43,7 @@ public class UserController : ControllerBase
         }
     }
     [Authorize(Roles = "Admin")]
-    [HttpGet("users")]
+    [HttpGet("GetAllUsers")]
     public async Task<IActionResult> GetAllUsers()
     {
         try

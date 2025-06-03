@@ -1,4 +1,5 @@
 using QuizApp.DTOs;
+using QuizApp.DTOs.User;
 
 namespace QuizApp.Services;
 

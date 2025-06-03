@@ -1,4 +1,4 @@
-﻿namespace QuizApp.DTOs
+﻿namespace QuizApp.DTOs.Quiz
 {
     public class UpdateQuizDTO
     {

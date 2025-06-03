@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QuizApp.Data;
 using QuizApp.DTOs;
+using QuizApp.DTOs.Quiz;
 using QuizApp.Models.Quiz;
 
 namespace QuizApp.Services;
@@ -64,7 +65,6 @@ public class QuizService : IQuizService
         await _context.SaveChangesAsync();
         return true;
     }
-
     public async Task<List<QuizDTO>> GetAllQuizzesByUserAsync(int userId)
     {
         return await _context.Quizzes
@@ -78,7 +78,6 @@ public class QuizService : IQuizService
             })
             .ToListAsync();
     }
-
     public async Task<QuizDTO?> GetQuizByIdAsync(int quizId, int userId)
     {
         var quiz = await _context.Quizzes
