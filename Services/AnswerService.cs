@@ -53,4 +53,23 @@ public class AnswerService : IAnswerService
             QuestionId = a.QuestionId
         }).ToListAsync();
     }
+
+    public async Task<AnswerDTO?> UpdateAnswerAsync(AnswerUpdateDTO answerUpdateDTO, int userId)
+    {
+        var answer = await _context.Answers.Include(a => a.Questions).ThenInclude(q => q!.Quiz).FirstOrDefaultAsync(a => a.Id == answerUpdateDTO.Id && a.Questions!.Quiz!.UserId == userId);
+        if (answer == null || answer.Questions!.Quiz!.UserId != userId)
+        {
+            return null;
+        }
+        answer.Text = answerUpdateDTO.Text;
+        answer.IsCorrect = answerUpdateDTO.IsCorrect;
+        await _context.SaveChangesAsync();
+        return new AnswerDTO()
+        {
+            Id = answer.Id,
+            Text = answer.Text,
+            IsCorrect = answer.IsCorrect,
+            QuestionId = answer.QuestionId
+        };
+    }
 }
