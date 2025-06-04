@@ -34,4 +34,22 @@ public class AnswerController : ControllerBase
             return BadRequest($"Error creating answer: {ex.Message}");
         }
     }
+    [HttpGet("question/{questionId}")]
+    public async Task<IActionResult> GetAnswersByQuestionId(int questionId)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+            var answers = await _answerService.GetAllAnswersByQuestionIdAsync(questionId, userId);
+            return Ok(answers); 
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error getting answers: {ex.Message}");
+        }
+    }
 }
