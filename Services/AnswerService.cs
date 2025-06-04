@@ -36,6 +36,18 @@ public class AnswerService : IAnswerService
         };
     }
 
+    public async Task<bool> DeleteAnswerAsync(int answerId, int userId)
+    {
+        var answer = await _context.Answers.Include(a => a.Questions).ThenInclude(q => q!.Quiz).FirstOrDefaultAsync(a => a.Id == answerId && a.Questions!.Quiz!.UserId == userId);
+        if (answer == null || answer.Questions!.Quiz!.UserId != userId)
+        {
+            return false;
+        }
+        _context.Answers.Remove(answer);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<List<AnswerDTO>?> GetAllAnswersByQuestionIdAsync(int questionId, int userId)
     {
         var question = await _context.Questions.Include(q => q.Quiz).FirstOrDefaultAsync(q => q.Id == questionId && q.Quiz!.UserId == userId);
