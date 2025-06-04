@@ -52,4 +52,22 @@ public class AnswerController : ControllerBase
             return BadRequest($"Error getting answers: {ex.Message}");
         }
     }
+    [HttpPut("UpdateAnswer")]
+    public async Task<IActionResult> UpdateAnswer([FromBody] AnswerUpdateDTO updateAnswerDTO)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+            var updatedAnswer = await _answerService.UpdateAnswerAsync(updateAnswerDTO, userId);
+            return Ok(updatedAnswer);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error updating answer: {ex.Message}");
+        }
+    }
 }
