@@ -32,6 +32,25 @@ public class AnswerService : IAnswerService
             Id = answer.Id,
             Text = answer.Text,
             IsCorrect = answer.IsCorrect,
+            QuestionId = answer.QuestionId
         };
+    }
+
+    public async Task<List<AnswerDTO>?> GetAllAnswersByQuestionIdAsync(int questionId, int userId)
+    {
+        var question = await _context.Questions.Include(q => q.Quiz).FirstOrDefaultAsync(q => q.Id == questionId && q.Quiz!.UserId == userId);
+        if (question == null || question.Quiz!.UserId != userId)
+        {
+            return null;
+        }
+        return await _context.Answers
+            .Where(a => a.QuestionId == questionId)
+            .Select(a => new AnswerDTO()
+        {
+            Id = a.Id,
+            Text = a.Text,
+            IsCorrect = a.IsCorrect,
+            QuestionId = a.QuestionId
+        }).ToListAsync();
     }
 }
