@@ -70,4 +70,26 @@ public class AnswerController : ControllerBase
             return BadRequest($"Error updating answer: {ex.Message}");
         }
     }
+    [HttpDelete("DeleteAnswer/{id}")] 
+    public async Task<IActionResult> DeleteAnswer(int id)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+            var deletedAnswer = await _answerService.DeleteAnswerAsync(id, userId);
+            if (!deletedAnswer)
+            {
+                return NotFound("Answer not found.");
+            }
+            return Ok(deletedAnswer);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error deleting answer: {ex.Message}");
+        }
+    }
 }
