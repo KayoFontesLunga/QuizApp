@@ -2,6 +2,7 @@
 using QuizApp.Data;
 using QuizApp.DTOs;
 using QuizApp.DTOs.Quiz;
+using QuizApp.DTOs.Submit;
 using QuizApp.Models.Quiz;
 
 namespace QuizApp.Services;
@@ -94,4 +95,38 @@ public class QuizService : IQuizService
         return quiz;
     }
 
+    public async Task<QuizResultDTO?> SubmitQuizAsync(SubmitQuizDTO submitQuizDto, int userId)
+    {
+        var quiz = await _context.Quizzes
+            .Include(q => q.Questions!)
+            .ThenInclude(q => q.Answers)
+            .FirstOrDefaultAsync(q => q.Id == submitQuizDto.QuizId && q.UserId == userId);
+
+        if (quiz == null || quiz.UserId != userId)
+        {
+            return null;
+        }
+        int total = quiz.Questions.Count;
+        int correct = 0;
+
+        foreach (var submitted in submitQuizDto.Answers)
+        {
+            var question = quiz.Questions.FirstOrDefault(q => q.Id == submitted.QuestionId);
+            if (question == null)
+            {
+                continue;
+            }
+            var answer = question.Answers.FirstOrDefault(a => a.Id == submitted.SelectedAnswerId);
+            if (answer != null && answer.IsCorrect)
+            {
+                correct++;
+            }
+        }
+        return new QuizResultDTO()
+        {
+            TotalQuestions = total,
+            CorrectAnswers = correct,
+            ScorePercentage = total > 0 ? Math.Round((double)correct / total * 100, 2) : 0
+        };
+    }
 }
