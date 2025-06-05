@@ -4,6 +4,7 @@ using QuizApp.DTOs;
 using QuizApp.DTOs.Quiz;
 using QuizApp.DTOs.Submit;
 using QuizApp.Models.Quiz;
+using System.Linq;
 
 namespace QuizApp.Services;
 
@@ -137,5 +138,21 @@ public class QuizService : IQuizService
             CorrectAnswers = correct,
             ScorePercentage = total > 0 ? Math.Round((double)correct / total * 100, 2) : 0
         };
+    }
+
+    public async Task<List<QuizRankingDTO>> GetRankingByQuizIdAsync(int quizId)
+    {
+        return await _context.QuizResults
+            .Where(qr => qr.QuizId == quizId)
+            .OrderByDescending(qr => qr.Score)
+            .ThenBy(qr => qr.SubmittedAt)
+            .Select(qr => new QuizRankingDTO
+            {
+                UserId = qr.UserId,
+                UserName = qr.User!.Name,
+                Score = qr.Score,
+                SubmittedAt = qr.SubmittedAt
+            })
+            .ToListAsync();
     }
 }

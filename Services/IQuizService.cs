@@ -13,4 +13,5 @@ public interface IQuizService
     Task<List<QuizDTO>> GetAllQuizzesByUserAsync(int userId);
     Task<QuizDTO?> GetQuizByIdAsync(int quizId, int userId);
     Task<QuizResultDTO?> SubmitQuizAsync(SubmitQuizDTO submitQuizDto, int userId);
+    Task<List<QuizRankingDTO>> GetRankingByQuizIdAsync(int quizId);
 }
