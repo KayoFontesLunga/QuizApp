@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.DTOs;
 using QuizApp.DTOs.Quiz;
+using QuizApp.DTOs.Submit;
 using QuizApp.Services;
 using System.Security.Claims;
 
@@ -123,6 +124,24 @@ public class QuizController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest($"Erro ao buscar quiz: {ex.Message}");
+        }
+    }
+    [HttpPost("submit")]
+    public async Task<ActionResult<QuizResultDTO>> SubmitQuiz([FromBody] SubmitQuizDTO submitQuizDTO)
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User ID not found in claims.");
+            }
+            var result = await _quizService.SubmitQuizAsync(submitQuizDTO, userId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error submitting quiz: {ex.Message}");
         }
     }
 }
