@@ -18,11 +18,13 @@ namespace QuizApp.Data
             modelBuilder.ApplyConfiguration(new QuizMap());
             modelBuilder.ApplyConfiguration(new AnswersMap());
             modelBuilder.ApplyConfiguration(new QuestionsMap());
+            modelBuilder.ApplyConfiguration(new QuizResultMap());
         }
 
         public DbSet<UserModel> Users { get; set; }
         public DbSet<QuizModel> Quizzes { get; set; }
         public DbSet<QuestionsModel> Questions { get; set; }
         public DbSet<AnswersModel> Answers { get; set; }
+        public DbSet<QuizResultModel> QuizResults { get; set; }
     }
 }

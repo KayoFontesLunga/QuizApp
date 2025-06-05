@@ -122,6 +122,15 @@ public class QuizService : IQuizService
                 correct++;
             }
         }
+        var quizResult = new QuizResultModel
+        {
+            QuizId = submitQuizDto.QuizId,
+            UserId = userId,
+            Score = correct,
+            SubmittedAt = DateTime.UtcNow
+        };
+        _context.QuizResults.Add(quizResult);
+        await _context.SaveChangesAsync();
         return new QuizResultDTO()
         {
             TotalQuestions = total,

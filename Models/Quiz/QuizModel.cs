@@ -14,4 +14,6 @@ public class QuizModel
     public int UserId { get; set; }
     public UserModel? User { get; set; }
     public ICollection<QuestionsModel> Questions { get; set; } = [];
+    public ICollection<QuizResultModel> QuizResults { get; set; } = new List<QuizResultModel>();
+
 }
