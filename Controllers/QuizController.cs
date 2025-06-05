@@ -144,4 +144,17 @@ public class QuizController : ControllerBase
             return BadRequest($"Error submitting quiz: {ex.Message}");
         }
     }
+    [HttpGet("{quizId}/ranking")]
+    public async Task<ActionResult<List<QuizRankingDTO>>> GetRankingByQuizId(int quizId)
+    {
+        try
+        {
+            var ranking = await _quizService.GetRankingByQuizIdAsync(quizId);
+            return Ok(ranking);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error getting ranking: {ex.Message}");
+        }
+    }
 }
