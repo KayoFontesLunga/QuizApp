@@ -13,5 +13,6 @@ namespace QuizApp.Models.User
         public SexType SexTypes { get; set; }
         public string Role { get; set; } = "User";
         public ICollection<QuizModel> Quizzes { get; set; } = [];
+        public ICollection<QuizResultModel> QuizResults { get; set; } = new List<QuizResultModel>();
     }
 }
