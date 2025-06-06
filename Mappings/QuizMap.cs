@@ -29,6 +29,10 @@ public class QuizMap : IEntityTypeConfiguration<QuizModel>
         builder.Property(q => q.UserId)
             .IsRequired();
 
+        builder.Property(q => q.IsGlobal)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.HasOne(q => q.User)
             .WithMany(u => u.Quizzes)
             .HasForeignKey(q => q.UserId)

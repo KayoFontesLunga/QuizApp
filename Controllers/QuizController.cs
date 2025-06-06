@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp.DTOs;
+using QuizApp.DTOs.Paginated;
 using QuizApp.DTOs.Quiz;
 using QuizApp.DTOs.Submit;
 using QuizApp.Services;
@@ -155,6 +156,19 @@ public class QuizController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest($"Error getting ranking: {ex.Message}");
+        }
+    }
+    [HttpGet("public")]
+    public async Task<ActionResult<PaginatedResult<QuizDTO>>> GetPublicQuizzes([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        try
+        {
+            var quizzes = await _quizService.GetPublicQuizzesPaginatedAsync(page, pageSize);
+            return Ok(quizzes);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error getting public quizzes: {ex.Message}");
         }
     }
 }
