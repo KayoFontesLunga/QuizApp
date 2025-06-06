@@ -10,7 +10,8 @@ public class QuizModel
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-  
+    public bool IsGlobal { get; set; } = false;
+ 
     public int UserId { get; set; }
     public UserModel? User { get; set; }
     public ICollection<QuestionsModel> Questions { get; set; } = [];

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QuizApp.Data;
 using QuizApp.DTOs;
+using QuizApp.DTOs.Paginated;
 using QuizApp.DTOs.Quiz;
 using QuizApp.DTOs.Submit;
 using QuizApp.Models.Quiz;
@@ -15,15 +16,26 @@ public class QuizService : IQuizService
     {
         _context = context;
     }
-    public async Task<QuizDTO> CreateQuizAsync(CreateQuizDTO createQuizDto, int userId)
+    public async Task<QuizDTO?> CreateQuizAsync(CreateQuizDTO createQuizDto, int userId)
     {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return null;
+        }
+        if (createQuizDto.IsGlobal && !user.Role.Equals("Admin"))
+        {
+            throw new Exception("Only admins can create global quizzes.");
+        }
         var quiz = new QuizModel()
         {
             Title = createQuizDto.Title,
             Description = createQuizDto.Description,
             CreatedAt = DateTime.UtcNow,
-            UserId = userId
+            UserId = userId,
+            IsGlobal = createQuizDto.IsGlobal
         };
+
         _context.Quizzes.Add(quiz);
         await _context.SaveChangesAsync();
         return new QuizDTO() 
@@ -31,7 +43,8 @@ public class QuizService : IQuizService
             Id = quiz.Id, 
             Title = quiz.Title, 
             Description = quiz.Description,
-            CreatedAt = quiz.CreatedAt 
+            CreatedAt = quiz.CreatedAt,
+            IsGlobal = quiz.IsGlobal
         };
     }
     public async Task<QuizDTO?> UpdateQuizAsync(UpdateQuizDTO updateQuizDto, int userId)
@@ -101,9 +114,9 @@ public class QuizService : IQuizService
         var quiz = await _context.Quizzes
             .Include(q => q.Questions!)
             .ThenInclude(q => q.Answers)
-            .FirstOrDefaultAsync(q => q.Id == submitQuizDto.QuizId && q.UserId == userId);
+            .FirstOrDefaultAsync(q => q.Id == submitQuizDto.QuizId);
 
-        if (quiz == null || quiz.UserId != userId)
+        if (quiz == null || (!quiz.IsGlobal && quiz.UserId != userId))
         {
             return null;
         }
@@ -154,5 +167,33 @@ public class QuizService : IQuizService
                 SubmittedAt = qr.SubmittedAt
             })
             .ToListAsync();
+    }
+    public async Task<PaginatedResult<QuizDTO>> GetPublicQuizzesPaginatedAsync(int page, int pageSize)
+    {
+        var query = _context.Quizzes
+            .Where(q => q.IsGlobal)
+            .OrderByDescending(q => q.CreatedAt);
+
+        var totalItems = await query.CountAsync();
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(q => new QuizDTO
+            {
+                Id = q.Id,
+                Title = q.Title,
+                Description = q.Description,
+                CreatedAt = q.CreatedAt,
+                IsGlobal = q.IsGlobal
+            })
+            .ToListAsync();
+        return new PaginatedResult<QuizDTO>
+        {
+            Items = items,
+            TotalItems = totalItems,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }
