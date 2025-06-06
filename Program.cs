@@ -71,7 +71,7 @@ var app = builder.Build();
 
 app.MapOpenApi();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "QuizApp v1"));
 
 app.UseHttpsRedirection();
 
