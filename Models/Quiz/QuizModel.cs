@@ -11,6 +11,7 @@ public class QuizModel
     public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsGlobal { get; set; } = false;
+    public bool IsAdmin { get; set; }
  
     public int UserId { get; set; }
     public UserModel? User { get; set; }
