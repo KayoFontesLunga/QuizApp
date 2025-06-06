@@ -77,10 +77,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-if (!app.Environment.IsProduction())
-{
-    app.UseHttpsRedirection();
-}
 
 app.UseAuthorization();
 
