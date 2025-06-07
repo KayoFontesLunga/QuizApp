@@ -64,9 +64,28 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowNextJS", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
+app.UseHttpsRedirection();
 
+app.UseCors("AllowNextJS");
+
+app.UseCookiePolicy();
 
 
 app.MapOpenApi();
